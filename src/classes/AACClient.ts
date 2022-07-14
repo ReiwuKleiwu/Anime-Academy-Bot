@@ -7,7 +7,7 @@ import {
   Page,
 } from 'playwright';
 import { setTimeout } from 'timers/promises';
-import PublicRooms from '../constants/rooms.enum';
+import PublicRooms from '../constants/publicRooms.enum';
 import AACCommand from '../interfaces/AACCommand.interface';
 import OwnAACUser from '../interfaces/OwnAACUser.interface';
 import sendMessage from '../scripts/sendMessage';
@@ -41,7 +41,7 @@ class AACClient extends EventEmitter {
     await this.aacNavigator.login();
     this.user = await this.aacNavigator.aacDataService.getOwnUser();
 
-    await this.aacNavigator.joinChat(PublicRooms.Mensa);
+    await this.aacNavigator.joinRoom(PublicRooms.Mensa);
     this.emit('ready', {
       client: this,
       name: 'ready',
