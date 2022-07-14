@@ -1,13 +1,14 @@
 import { Page, Response, Request } from 'playwright';
-import { EventEmitter } from 'events';
+import OwnAACUser from '../interfaces/OwnAACUser.interface';
+import AACClient from './AACClient';
 
 class AACDataService {
   private page: Page;
-  private emitter: EventEmitter;
+  private aacClient: AACClient;
 
-  constructor(page: Page, emitter: EventEmitter) {
+  constructor(page: Page, emitter: AACClient) {
     this.page = page;
-    this.emitter = emitter;
+    this.aacClient = emitter;
   }
 
   async decodeSocketResponseData(): Promise<void> {
@@ -33,8 +34,8 @@ class AACDataService {
           const eventDataJsonFormat = `{"data": ${eventData}}`;
           const eventDataJson = JSON.parse(eventDataJsonFormat);
 
-          this.emitter.emit('socketIncomingEvent', {
-            event: eventName,
+          this.aacClient.emit(eventName, {
+            client: this.aacClient,
             data: eventDataJson.data,
           });
         } catch (error) {
@@ -79,10 +80,10 @@ class AACDataService {
           const eventDataJsonFormat = `{"data": ${eventData}}`;
           const eventDataJson = JSON.parse(eventDataJsonFormat);
 
-          this.emitter.emit('socketOutgoingEvent', {
-            event: eventName,
-            data: eventDataJson.data,
-          });
+          // this.aacClient.emit(eventName, {
+          //   client: this.aacClient,
+          //   data: eventDataJson.data,
+          // });
         } catch (error) {
           console.log(error);
           console.log(eventData);
@@ -93,7 +94,7 @@ class AACDataService {
     this.page.on('request', handler);
   }
 
-  async getOwnUser(): Promise<{}> {
+  async getOwnUser(): Promise<OwnAACUser> {
     const userData = await this.page.request.get(
       'https://www.anime.academy/data/Ownusername'
     );
@@ -102,20 +103,21 @@ class AACDataService {
     return {
       activityPoints: userJson.activitypoints,
       activityPointsToday: userJson.activitypoints_today,
-      ap: userJson.aps,
+      academyPoints: userJson.aps,
       currentAvatar: userJson.currentava,
       username: userJson.festerusername,
       chatname: userJson.username,
+      houseData: userJson.houseData,
       isBabo: userJson.isBabo,
       isSubscriber: userJson.isSubscriber,
       isVip: userJson.isVip,
       kayos: userJson.kayos,
       premium: userJson.premium,
-      profileimg: userJson.profileimg,
+      profileImg: userJson.profileimg,
       rank: userJson.rank,
       role: userJson.roll,
-      schoolrank: userJson.schoolrank,
-      userid: userJson.userid,
+      schoolRank: userJson.schoolrank,
+      userId: userJson.userid,
     };
   }
 }

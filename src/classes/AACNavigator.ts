@@ -1,29 +1,29 @@
 import { Page } from 'playwright';
-import { EventEmitter } from 'stream';
 import config from '../config.json';
 import AACDataService from './AACDataService';
+import AACClient from './AACClient';
 import getSocketObject from '../scripts/getSocketObject';
 
 class AACNavigator {
-  private aacDataService!: AACDataService;
+  private aacClient: AACClient;
+  public aacDataService!: AACDataService;
   private email: string;
   private password: string;
   private url: string;
   private page: Page;
   private checkDisconnectInterval!: NodeJS.Timer;
   private currentRoom!: string;
-  private emitter: EventEmitter;
 
-  constructor(page: Page, emitter: EventEmitter) {
+  constructor(page: Page, emitter: AACClient) {
     this.email = config.AACBot.login_credentials.email;
     this.password = config.AACBot.login_credentials.password;
     this.url = 'https://www.anime.academy/';
     this.page = page;
-    this.emitter = emitter;
-    this.aacDataService = new AACDataService(this.page, this.emitter);
+    this.aacClient = emitter;
+    this.aacDataService = new AACDataService(this.page, this.aacClient);
   }
 
-  async login(): Promise<{}> {
+  async login(): Promise<void> {
     await this.page.goto(this.url);
     this.page
       .locator('button >> visible=true', {
@@ -42,10 +42,9 @@ class AACNavigator {
       .locator('a', {
         hasText: 'Zur Academy-Welt',
       })
-      .waitFor();
-
-    const userData = await this.aacDataService.getOwnUser();
-    return userData;
+      .waitFor({
+        state: 'visible',
+      });
   }
 
   async joinChat(room = 'Campus'): Promise<void> {
