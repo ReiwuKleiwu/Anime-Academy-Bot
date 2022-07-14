@@ -21,7 +21,7 @@ class AACClient extends EventEmitter {
   private launchOptions!: LaunchOptions;
   private context!: BrowserContext;
   private page!: Page;
-  private user!: OwnAACUser;
+  public user!: OwnAACUser;
   public commands!: Map<string, AACCommand>;
 
   constructor() {

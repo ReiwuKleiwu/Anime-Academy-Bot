@@ -18,7 +18,7 @@ class AACDataService {
 
       const responseText = await response.text();
 
-      const socketEvents = responseText.split('42');
+      const socketEvents = responseText.split('42[');
 
       if (!socketEvents) return;
 
